@@ -89,6 +89,17 @@ NSString *decodeStringFromBuffer(uint8_t *buffer, int64_t length, int64_t *offse
 
 NSData *decodeDataFromBuffer(uint8_t *buffer, int64_t length, int64_t *offset,NSError **error);
 
+//packet
+NSData *packetData(NSData *data,CCCodeItemType codeType);
+
+void packetDataIntoCodeData(NSData *data,CCCodeItemType codeType, CCMutableCodeData *codeData);
+
+void packetCodeData(CCCodeData *data, CCCodeItemType codeType, CCMutableCodeData *codeData);
+
+NSData *unpackData(NSData *data, CCCodeItemType *codeType, int64_t *size, int64_t *offset);
+
+NSRange unpackBuffer(uint8_t *buffer, int64_t bufferSize, CCCodeItemType *codeType, int8_t *len, int64_t *size, int64_t *offset);
+
 
 //这些是同字节数（sizeof）的转换
 int32_t Int32FromFloat(float val);
@@ -103,15 +114,3 @@ double DoubleFromInt64(int64_t val);
 int64_t Int64FromFloat(float val);
 
 float FloatFromInt64(int64_t val);
-
-
-//packet
-NSData *packetData(NSData *data,CCCodeItemType codeType);
-
-void packetDataIntoCodeData(NSData *data,CCCodeItemType codeType, CCMutableCodeData *codeData);
-
-void packetCodeData(CCCodeData *data, CCCodeItemType codeType, CCMutableCodeData *codeData);
-
-NSData *unpackData(NSData *data, CCCodeItemType *codeType, int64_t *size, int64_t *offset);
-
-NSRange unpackBuffer(uint8_t *buffer, int64_t bufferSize, CCCodeItemType *codeType, int8_t *len, int64_t *size, int64_t *offset);

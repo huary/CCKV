@@ -1054,7 +1054,7 @@ static inline BOOL _ensureAppendSize(struct CCCFKVContext *ctx, uint64_t appendS
         return NO;
     }
     
-    NSLog(@"appendSize:%lld,newSize:%lld",appendSize,newSize);
+//    NSLog(@"appendSize:%lld,newSize:%lld",appendSize,newSize);
     if (_shouldFullWriteBack(ctx)) {
         NSDictionary *dict = _fullWriteBack(ctx, currentDict, YES, &errorTmp);
         

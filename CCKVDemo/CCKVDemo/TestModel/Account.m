@@ -44,7 +44,7 @@
     return [NSString stringWithFormat:@"Account:\nsuper=%@,\n_autoAuthKey=%@,\n_appKey=%@,\n_rangeStart=%@,\n_watershed=%@,\n_height=%@,\n_weight=%@,\n_ext=%@,\n_name=%@",sd,autoAuthKey,self.appKey,@(self.rangeStart),@(self.watershed),@(self.height),@(self.weight),@(self.ext),self.name];
 }
 
-+ (Class)hz_objectCodeToTopSuperClass
++ (Class)cc_objectCodeToTopSuperClass
 {
     return [Base class];
 }

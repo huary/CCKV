@@ -55,18 +55,6 @@ typedef NS_ENUM(NSInteger, NSTestOption)
     NSTestOptionString  = 2,
 };
 
-class TestSharedPtr {
-public:
-    TestSharedPtr(int32_t val) {
-        _val = val;
-        NSLog(@"constructor======.val=%d",val);
-    }
-    ~TestSharedPtr() {
-        NSLog(@"destructor======val=%d",_val);
-    }
-    int32_t _val;
-};
-
 
 
 
@@ -75,7 +63,6 @@ public:
     shared_ptr<CCAESCryptor> _cryptor;
 }
 
-/** <#注释#> */
 @property (nonatomic, copy) NSString *basePath;
 
 @property (nonatomic, copy) NSString *kvName;
@@ -127,11 +114,6 @@ public:
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-//    [self _testClass];
-    
-//    [self _testSharedPtr];
-//    return;
     
 //    [self _testCoder];
     
@@ -196,9 +178,6 @@ public:
 }
 
 - (NSString*)cryptKeyString{
-//    if (_cryptKeyString == nil) {
-//        _cryptKeyString = self.cryptKeyTextField.text;
-//    }
     _cryptKeyString = self.cryptKeyTextField.text;
     return _cryptKeyString;
 }
@@ -213,79 +192,6 @@ static inline BOOL objectIsKindOfClass(id object, Class cls)
         }
     }
     return NO;
-}
-
-- (void)_testClass
-{
-    NSNumber *val = @(2);
-    int cnt = 1;
-    
-//    Class vcls = [val class];
-    NSLog(@"class=");
-    [YZHMachTimeUtils elapsedMSTimeInBlock:^{
-//        [val class];
-        for (int i = 0; i < cnt; ++i) {
-            [val isKindOfClass:[NSString class]];
-        }
-        
-//        [vcls superclass];
-    }];
-    NSLog(@"object_getClass=");
-    NSString *text = @"object_getClass";
-    [YZHMachTimeUtils elapsedMSTimeInBlock:^{
-//        [val class] == [NSNumber class];
-        for (int i = 0; i < cnt; ++i) {
-            
-            objectIsKindOfClass(val, [NSString class]);
-            
-            
-//            NSLog(@"size=%ld",class_getInstanceSize(object_getClass(text)));
-            
-//            Class vcls = [val class];
-//            Class ncls = [NSString class];
-//
-//
-//
-//            while (vcls && vcls != ncls) {
-//                vcls = class_getSuperclass(vcls);
-//                //            vcls = [vcls superclass];
-//                NSLog(@"vcls=%@",vcls);
-//            }
-        }
-//        class_getSuperclass(vcls);
-    }];
-    
-    
-    NSLog(@"val.class=%@,cls=%@,number.cls=%@,isSame=%@",[val class],object_getClass(val),[NSNumber class],@([val class] == [NSNumber class]));
-    
-}
-
-- (void)_testSharedPtr
-{
-//    shared_ptr<TestSharedPtr> share1 = make_shared<TestSharedPtr>(10);
-//    NSLog(@"share1.cnt=%ld,ptr=%p",share1.use_count(),share1.get());
-////    share1.reset();
-////    NSLog(@"share1.cnt=%d,ptr=%p",share1.use_count(),share1.get());
-////    shared_ptr<TestSharedPtr> share2 = share1;
-////    NSLog(@"share1.cnt=%d,ptr=%p",share1.use_count(),share1.get());
-////    NSLog(@"share2.cnt=%d,ptr=%p",share2.use_count(),share2.get());
-////    share1.reset();
-////    NSLog(@"share1.cnt=%d,ptr=%p",share1.use_count(),share1.get());
-////    NSLog(@"share2.cnt=%d,ptr=%p",share2.use_count(),share2.get());
-//
-//    shared_ptr<TestSharedPtr> share3;
-//    NSLog(@"share3.cnt=%ld,ptr=%p",share3.use_count(),share3.get());
-//    share1.swap(share3);
-//    NSLog(@"share1.cnt=%ld,ptr=%p",share1.use_count(),share1.get());
-//    NSLog(@"share3.cnt=%ld,ptr=%p",share3.use_count(),share3.get());
-    
-    CCMutableCodeData *codeData = new CCMutableCodeData();
-    
-//    shared_ptr<CCCodeData> share = shared_ptr<CCCodeData>(codeData);
-    shared_ptr<CCCodeData> share = make_shared<CCMutableCodeData>(codeData);
-
-    
-    NSLog(@"%s.finish",__FUNCTION__);
 }
 
 - (void)_setupDefaultData
@@ -345,9 +251,6 @@ static inline BOOL objectIsKindOfClass(id object, Class cls)
     
     UIView *input = [UIView new];
     input.frame =frame;
-//    input.layer.borderWidth = 1.0;
-//    input.layer.borderColor = GROUP_TABLEVIEW_BG_COLOR.CGColor;
-//    input.layer.cornerRadius = 5.0;
     
     UILabel *label = [UILabel new];
     label.tag = 1;
@@ -605,22 +508,10 @@ static inline BOOL objectIsKindOfClass(id object, Class cls)
 
 -(void)_testAccount
 {
-    CCMutableCodeData codeData;
-    
-    int64_t uin = 5050023337659471103;
-    encodeIntegerIntoCodeData(uin, &codeData);
-    
-    int64_t tmp = decodeIntegerFromBuffer(codeData.bytes(), codeData.dataSize(), nullptr, NULL);
-    NSLog(@"tmp=%@",@(tmp));
-    
-//    NSLog(@"ULL.cnt=%d,UInt.cnt=%d",TYPEULL_BYTES_N(-1),TYPEUINT_BYTES_N(-1));
-    
-    return;
-    
 #if 0
     //Account
     Account *accout = [Account new];
-    accout.uin = 1234567899;
+    accout.uin = 5050023337659471103;
     accout.accid = @"accid";
     accout.token = @"token";
     accout.session = @"session";
@@ -660,17 +551,6 @@ static inline BOOL objectIsKindOfClass(id object, Class cls)
     
     NSArray *list = @[accout,x,test];
     NSMutableArray *result = [NSMutableArray array];
-    
-//    NSInteger cnt = 10000;
-//
-//    for (NSInteger i = 0; i < cnt; ++i) {
-//
-//        NSInteger idx = arc4random()%3;
-//        id obj = [list objectAtIndex:idx];
-//
-//        [result addObject:obj];
-//    }
-//    [result addObject:accout];
     [result addObjectsFromArray:list];
     
     NSLog(@"start KV storage:cnt=%ld",result.count);
@@ -1023,7 +903,6 @@ static inline BOOL objectIsKindOfClass(id object, Class cls)
     
     if (_mmkv) {
         [_mmkv close];
-//        NSString *filePath = [[MMKV mmkvBasePath] stringByAppendingPathComponent:self.mmkvName];
         [YZHKVUtils removeFileItemAtPath:[MMKV mmkvBasePath]];
         _mmkv = nil;
     }

@@ -113,6 +113,52 @@ BOOL objectIsKindOfClass(id object, Class cls)
     return NO;
 }
 
+CCCodeItemType objectCodeType(id object)
+{
+    Class objCls = [object class];
+    Class numberCls = [NSNumber class];
+    Class stringCls = [NSString class];
+    Class dataCls = [NSData class];
+    Class arrayCls = [NSArray class];
+    Class dictCls = [NSDictionary class];
+    Class objectCls = [NSObject class];
+    CCCodeItemType codeType = CCCodeItemTypeMax;
+    while (objCls) {
+        if (objCls == numberCls) {
+            NSNumber *num = object;
+            int8_t type = num.objCType ? num.objCType[0] : 0;
+            if (type == 'd') {
+                return CCCodeItemTypeReal;
+            }
+            else if (type == 'f') {
+                return CCCodeItemTypeRealF;
+            }
+            else {
+                return CCCodeItemTypeInteger;
+            }
+        }
+        else if (objCls == stringCls) {
+            return CCCodeItemTypeText;
+        }
+        else if (objCls == dataCls) {
+            return CCCodeItemTypeBlob;
+        }
+        else if (objCls == arrayCls) {
+            return CCCodeItemTypeArray;
+        }
+        else if (objCls == dictCls) {
+            return CCCodeItemTypeDictionary;
+        }
+        else if (objCls == objectCls) {
+            return CCCodeItemTypeObject;
+        }
+        else {
+            objCls = class_getSuperclass(objCls);
+        }
+    }
+    return codeType;
+}
+
 BOOL classIsSubclassOfClass(Class sub, Class cls)
 {
     while (sub) {
@@ -427,81 +473,173 @@ static inline void _encodeObject(id object, Class topSuperClass, CCMutableCodeDa
         return;
     }
     
-    if (objectIsKindOfClass(object, [NSNumber class])) {
-        NSNumber *num = object;
-        int8_t type = num.objCType ? num.objCType[0] : 0;
-        if (type == 'd') {
-            double val = [num doubleValue];
-            encodeDoubleIntoCodeData(val, codeData);
+    Class objCls = [object class];
+    Class numberCls = [NSNumber class];
+    Class stringCls = [NSString class];
+    Class dataCls = [NSData class];
+    Class arrayCls = [NSArray class];
+    Class dictCls = [NSDictionary class];
+    Class objectCls = [NSObject class];
+    while (objCls) {
+        if (objCls == numberCls) {
+            NSNumber *num = object;
+            int8_t type = num.objCType ? num.objCType[0] : 0;
+            if (type == 'd') {
+                double val = [num doubleValue];
+                encodeDoubleIntoCodeData(val, codeData);
+            }
+            else if (type == 'f') {
+                float val = [num floatValue];
+                encodeFloatIntoCodeData(val, codeData);
+            }
+            else {
+                int64_t val = [num longLongValue];
+                encodeIntegerIntoCodeData(val, codeData);
+            }
+            return;
         }
-        else if (type == 'f') {
-            float val = [num floatValue];
-            encodeFloatIntoCodeData(val, codeData);
+        else if (objCls == stringCls) {
+            NSString *text = object;
+            encodeStringIntoCodeData(text, codeData);
+            return;
         }
-        else {
-            int64_t val = [num longLongValue];
-            encodeIntegerIntoCodeData(val, codeData);
+        else if (objCls == dataCls) {
+            NSData *data = object;
+            encodeDataIntoCodeData(data, codeData);
+            return;
         }
-    }
-    else if (objectIsKindOfClass(object, [NSString class])) {
-        NSString *text = object;
-        encodeStringIntoCodeData(text, codeData);
-    }
-    else if (objectIsKindOfClass(object, [NSData class])) {
-        NSData *data = object;
-        encodeDataIntoCodeData(data, codeData);
-    }
-    else if (objectIsKindOfClass(object, [NSArray class])) {
-        NSArray *array = object;
-        
-        _estimateReservedEncodeObjectWithCodeType(CCCodeItemTypeArray, codeData, ^(CCMutableCodeData *codeData) {
-            [array enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                encodeObjectIntoCodeData(obj, codeData, NULL);
-            }];
-        });
-    }
-    else if (objectIsKindOfClass(object, [NSDictionary class])) {
-        NSDictionary *dict = object;
-        
-        _estimateReservedEncodeObjectWithCodeType(CCCodeItemTypeDictionary, codeData, ^(CCMutableCodeData *codeData) {
-            [dict enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        else if (objCls == arrayCls) {
+            NSArray *array = object;
+            
+            _estimateReservedEncodeObjectWithCodeType(CCCodeItemTypeArray, codeData, ^(CCMutableCodeData *codeData) {
+                [array enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    encodeObjectIntoCodeData(obj, codeData, NULL);
+                }];
+            });
+            return;
+        }
+        else if (objCls == dictCls) {
+            NSDictionary *dict = object;
+            
+            _estimateReservedEncodeObjectWithCodeType(CCCodeItemTypeDictionary, codeData, ^(CCMutableCodeData *codeData) {
+                [dict enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+                    
+                    _mergeEncodeObjectWithKey(obj, [obj cc_codeToTopSuperClass], key, codeData);
+                }];
+            });
+            return;
+        }
+        else if (objCls == objectCls) {
+            _estimateReservedEncodeObjectWithCodeType(CCCodeItemTypeObject, codeData, ^(CCMutableCodeData *codeData) {
                 
-                _mergeEncodeObjectWithKey(obj, [obj cc_codeToTopSuperClass], key, codeData);
-            }];
-        });
-    }
-    else if (objectIsKindOfClass(object, [NSObject class])) {
-        _estimateReservedEncodeObjectWithCodeType(CCCodeItemTypeObject, codeData, ^(CCMutableCodeData *codeData) {
-            
-            uint64_t startOffset = codeData->currentSeek();
-            
-            Class cls = object_getClass(object);
-            NSString *clsName = [NSString stringWithUTF8String:class_getName(cls)];
-            encodeStringIntoCodeData(clsName, codeData);
-            
-            uint64_t startObjOffset = codeData->currentSeek();
-            
-            _estimateReservedEncodeObjectWithCodeType(CCCodeItemTypeBlob, codeData, ^(CCMutableCodeData *codeData) {
-                if ([object conformsToProtocol:@protocol(NSCoding)]) {
-                    NSData *objDt = _archivedDataWithObject(object);
-                    codeData->appendWriteData(objDt);
-                }
-                else {
-                    _encodeObjectFromClassToTopSuperClassIntoCodeData(object, object_getClass(object), topSuperClass, codeData);
+                uint64_t startOffset = codeData->currentSeek();
+                
+                Class cls = object_getClass(object);
+                NSString *clsName = [NSString stringWithUTF8String:class_getName(cls)];
+                encodeStringIntoCodeData(clsName, codeData);
+                
+                uint64_t startObjOffset = codeData->currentSeek();
+                
+                _estimateReservedEncodeObjectWithCodeType(CCCodeItemTypeBlob, codeData, ^(CCMutableCodeData *codeData) {
+                    if ([object conformsToProtocol:@protocol(NSCoding)]) {
+                        NSData *objDt = _archivedDataWithObject(object);
+                        codeData->appendWriteData(objDt);
+                    }
+                    else {
+                        _encodeObjectFromClassToTopSuperClassIntoCodeData(object, object_getClass(object), topSuperClass, codeData);
+                    }
+                });
+                
+                int64_t endObjOffset = codeData->currentSeek();
+                if (endObjOffset - startObjOffset <= 0) {
+                    codeData->truncateToWithSeek(startOffset, CCDataSeekTypeEND);
                 }
             });
-            
-            int64_t endObjOffset = codeData->currentSeek();
-            if (endObjOffset - startObjOffset <= 0) {
-                codeData->truncateToWithSeek(startOffset, CCDataSeekTypeEND);
-            }
-        });
-    }
-    else {
-        if (*error) {
-            *error = [NSError errorWithDomain:_CCCoderErrorDomain code:CCCoderErrorTypeError userInfo:nil];
+            return;
+        }
+        else {
+            objCls = class_getSuperclass(objCls);
         }
     }
+    if (*error) {
+        *error = [NSError errorWithDomain:_CCCoderErrorDomain code:CCCoderErrorTypeError userInfo:nil];
+    }
+    
+//    if (objectIsKindOfClass(object, [NSNumber class])) {
+//        NSNumber *num = object;
+//        int8_t type = num.objCType ? num.objCType[0] : 0;
+//        if (type == 'd') {
+//            double val = [num doubleValue];
+//            encodeDoubleIntoCodeData(val, codeData);
+//        }
+//        else if (type == 'f') {
+//            float val = [num floatValue];
+//            encodeFloatIntoCodeData(val, codeData);
+//        }
+//        else {
+//            int64_t val = [num longLongValue];
+//            encodeIntegerIntoCodeData(val, codeData);
+//        }
+//    }
+//    else if (objectIsKindOfClass(object, [NSString class])) {
+//        NSString *text = object;
+//        encodeStringIntoCodeData(text, codeData);
+//    }
+//    else if (objectIsKindOfClass(object, [NSData class])) {
+//        NSData *data = object;
+//        encodeDataIntoCodeData(data, codeData);
+//    }
+//    else if (objectIsKindOfClass(object, [NSArray class])) {
+//        NSArray *array = object;
+//        
+//        _estimateReservedEncodeObjectWithCodeType(CCCodeItemTypeArray, codeData, ^(CCMutableCodeData *codeData) {
+//            [array enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//                encodeObjectIntoCodeData(obj, codeData, NULL);
+//            }];
+//        });
+//    }
+//    else if (objectIsKindOfClass(object, [NSDictionary class])) {
+//        NSDictionary *dict = object;
+//        
+//        _estimateReservedEncodeObjectWithCodeType(CCCodeItemTypeDictionary, codeData, ^(CCMutableCodeData *codeData) {
+//            [dict enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+//                
+//                _mergeEncodeObjectWithKey(obj, [obj cc_codeToTopSuperClass], key, codeData);
+//            }];
+//        });
+//    }
+//    else if (objectIsKindOfClass(object, [NSObject class])) {
+//        _estimateReservedEncodeObjectWithCodeType(CCCodeItemTypeObject, codeData, ^(CCMutableCodeData *codeData) {
+//            
+//            uint64_t startOffset = codeData->currentSeek();
+//            
+//            Class cls = object_getClass(object);
+//            NSString *clsName = [NSString stringWithUTF8String:class_getName(cls)];
+//            encodeStringIntoCodeData(clsName, codeData);
+//            
+//            uint64_t startObjOffset = codeData->currentSeek();
+//            
+//            _estimateReservedEncodeObjectWithCodeType(CCCodeItemTypeBlob, codeData, ^(CCMutableCodeData *codeData) {
+//                if ([object conformsToProtocol:@protocol(NSCoding)]) {
+//                    NSData *objDt = _archivedDataWithObject(object);
+//                    codeData->appendWriteData(objDt);
+//                }
+//                else {
+//                    _encodeObjectFromClassToTopSuperClassIntoCodeData(object, object_getClass(object), topSuperClass, codeData);
+//                }
+//            });
+//            
+//            int64_t endObjOffset = codeData->currentSeek();
+//            if (endObjOffset - startObjOffset <= 0) {
+//                codeData->truncateToWithSeek(startOffset, CCDataSeekTypeEND);
+//            }
+//        });
+//    }
+//    else {
+//        if (*error) {
+//            *error = [NSError errorWithDomain:_CCCoderErrorDomain code:CCCoderErrorTypeError userInfo:nil];
+//        }
+//    }
 }
 
 NSData *_encodeObjectToTopSuperClass(id object, Class topSuperClass, NSError **error)
@@ -978,49 +1116,6 @@ NSData *decodeDataFromBuffer(uint8_t *buffer, int64_t length, int64_t *offset,NS
     return [NSData dataWithBytes:ptr length:r.length];
 }
 
-//这些是同字节数（sizeof）的转换
-int32_t Int32FromFloat(float val)
-{
-    Converter<float, int32_t> cvter;
-    cvter.from = val;
-    return cvter.to;
-}
-
-float FloatFromInt32(int32_t val)
-{
-    Converter<int32_t, float> cvter;
-    cvter.from = val;
-    return cvter.to;
-}
-
-int64_t Int64FromDouble(double val)
-{
-    Converter<double, int64_t> cvter;
-    cvter.from = val;
-    return cvter.to;
-}
-
-double DoubleFromInt64(int64_t val)
-{
-    Converter<int64_t, double> cvter;
-    cvter.from = val;
-    return cvter.to;
-}
-
-
-//将float和Int32进行转换，Int32存在Int64上
-int64_t Int64FromFloat(float val)
-{
-    return Int32FromFloat(val);
-}
-
-float FloatFromInt64(int64_t val)
-{
-    int32_t ival = TYPE_AND(val, 0XFFFFFFFF);
-    return FloatFromInt32(ival);
-}
-
-
 
 NSData* packetData(NSData *data,CCCodeItemType codeType)
 {
@@ -1102,4 +1197,46 @@ NSRange unpackBuffer(uint8_t *buffer, int64_t bufferSize, CCCodeItemType *codeTy
         *offset = 1 + lenTmp + sizeTmp;
     }
     return NSMakeRange(NSUInteger(1 + lenTmp), (NSUInteger)sizeTmp);
+}
+
+//这些是同字节数（sizeof）的转换
+int32_t Int32FromFloat(float val)
+{
+    Converter<float, int32_t> cvter;
+    cvter.from = val;
+    return cvter.to;
+}
+
+float FloatFromInt32(int32_t val)
+{
+    Converter<int32_t, float> cvter;
+    cvter.from = val;
+    return cvter.to;
+}
+
+int64_t Int64FromDouble(double val)
+{
+    Converter<double, int64_t> cvter;
+    cvter.from = val;
+    return cvter.to;
+}
+
+double DoubleFromInt64(int64_t val)
+{
+    Converter<int64_t, double> cvter;
+    cvter.from = val;
+    return cvter.to;
+}
+
+
+//将float和Int32进行转换，Int32存在Int64上
+int64_t Int64FromFloat(float val)
+{
+    return Int32FromFloat(val);
+}
+
+float FloatFromInt64(int64_t val)
+{
+    int32_t ival = TYPE_AND(val, 0XFFFFFFFF);
+    return FloatFromInt32(ival);
 }

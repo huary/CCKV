@@ -351,11 +351,11 @@
 			children = (
 				1C4D97F02331DB2000ACEE5D /* CCCodeData.h */,
 				1C4D97F12331DB2000ACEE5D /* CCCodeData.mm */,
-				1C4D97F22331DB2000ACEE5D /* NSObject+CCCodeToTopSuperClass.h */,
-				1C4D97F32331DB2000ACEE5D /* CCMacro.h */,
 				1C4D97F42331DB2000ACEE5D /* CCCoder.h */,
-				1C4D97F52331DB2000ACEE5D /* NSObject+CCCodeToTopSuperClass.m */,
 				1C4D97F62331DB2000ACEE5D /* CCCoder.mm */,
+				1C4D97F32331DB2000ACEE5D /* CCMacro.h */,
+				1C4D97F22331DB2000ACEE5D /* NSObject+CCCodeToTopSuperClass.h */,
+				1C4D97F52331DB2000ACEE5D /* NSObject+CCCodeToTopSuperClass.m */,
 			);
 			path = CCCoder;
 			sourceTree = "<group>";
