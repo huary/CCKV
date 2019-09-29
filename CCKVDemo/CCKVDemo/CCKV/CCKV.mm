@@ -9,6 +9,7 @@
 #import "CCKV.h"
 #import "CCCFKV.h"
 #import "CCCoder.h"
+#import "CCMacro.h"
 #import "CCCFKVDelegate.h"
 
 #define DEFAULT_CCKV_NAME              @"CC.kv.default"
@@ -257,12 +258,10 @@ NSString *const _CCKVErrorDomain = @"CCKVErrorDomain";
     NSLog(@"CCKV---------dealloc");
 }
 
-//#if DEBUG
 - (NSString*)filePath
 {
     string filePath = _sharedPtrCFKV->getFilePath();
     return [[NSString alloc] initWithUTF8String:filePath.c_str()];
 }
-//#endif
 
 @end

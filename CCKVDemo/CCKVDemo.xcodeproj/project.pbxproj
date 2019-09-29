@@ -27,7 +27,6 @@
 		1C4D98262331DB2000ACEE5D /* openSSL_cbc128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4D97D82331DB2000ACEE5D /* openSSL_cbc128.cpp */; };
 		1C4D98272331DB2000ACEE5D /* openSSL_cts128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4D97D92331DB2000ACEE5D /* openSSL_cts128.cpp */; };
 		1C4D98282331DB2000ACEE5D /* openSSL_ofb128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4D97DA2331DB2000ACEE5D /* openSSL_ofb128.cpp */; };
-		1C4D98292331DB2000ACEE5D /* openSSL_gcm128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4D97DB2331DB2000ACEE5D /* openSSL_gcm128.cpp */; };
 		1C4D982A2331DB2000ACEE5D /* openSSL_xts128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4D97DC2331DB2000ACEE5D /* openSSL_xts128.cpp */; };
 		1C4D982B2331DB2000ACEE5D /* openSSL_ocb128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4D97DD2331DB2000ACEE5D /* openSSL_ocb128.cpp */; };
 		1C4D982C2331DB2000ACEE5D /* openSSL_ctr128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4D97DE2331DB2000ACEE5D /* openSSL_ctr128.cpp */; };
@@ -112,7 +111,6 @@
 		1C4D97D82331DB2000ACEE5D /* openSSL_cbc128.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = openSSL_cbc128.cpp; sourceTree = "<group>"; };
 		1C4D97D92331DB2000ACEE5D /* openSSL_cts128.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = openSSL_cts128.cpp; sourceTree = "<group>"; };
 		1C4D97DA2331DB2000ACEE5D /* openSSL_ofb128.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = openSSL_ofb128.cpp; sourceTree = "<group>"; };
-		1C4D97DB2331DB2000ACEE5D /* openSSL_gcm128.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = openSSL_gcm128.cpp; sourceTree = "<group>"; };
 		1C4D97DC2331DB2000ACEE5D /* openSSL_xts128.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = openSSL_xts128.cpp; sourceTree = "<group>"; };
 		1C4D97DD2331DB2000ACEE5D /* openSSL_ocb128.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = openSSL_ocb128.cpp; sourceTree = "<group>"; };
 		1C4D97DE2331DB2000ACEE5D /* openSSL_ctr128.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = openSSL_ctr128.cpp; sourceTree = "<group>"; };
@@ -315,7 +313,6 @@
 				1C4D97D82331DB2000ACEE5D /* openSSL_cbc128.cpp */,
 				1C4D97D92331DB2000ACEE5D /* openSSL_cts128.cpp */,
 				1C4D97DA2331DB2000ACEE5D /* openSSL_ofb128.cpp */,
-				1C4D97DB2331DB2000ACEE5D /* openSSL_gcm128.cpp */,
 				1C4D97DC2331DB2000ACEE5D /* openSSL_xts128.cpp */,
 				1C4D97DD2331DB2000ACEE5D /* openSSL_ocb128.cpp */,
 				1C4D97DE2331DB2000ACEE5D /* openSSL_ctr128.cpp */,
@@ -659,7 +656,6 @@
 				1C4D981C2331DB2000ACEE5D /* Account.m in Sources */,
 				1C4D98192331DB2000ACEE5D /* UIReuseCell.m in Sources */,
 				1C4D98362331DB2000ACEE5D /* CCCoder.mm in Sources */,
-				1C4D98292331DB2000ACEE5D /* openSSL_gcm128.cpp in Sources */,
 				1C4D983A2331DB2000ACEE5D /* YZHUIExcelItemCell.m in Sources */,
 				1C4D978C2331D9BF00ACEE5D /* AppDelegate.m in Sources */,
 				1C4D982A2331DB2000ACEE5D /* openSSL_xts128.cpp in Sources */,
@@ -840,10 +836,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7C6YPJQ829;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/CCKVDemo/Framework",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = CCKVDemo/PrefixHeader.pch;
 				INFOPLIST_FILE = CCKVDemo/Info.plist;
@@ -865,10 +858,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7C6YPJQ829;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/CCKVDemo/Framework",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = CCKVDemo/PrefixHeader.pch;
 				INFOPLIST_FILE = CCKVDemo/Info.plist;

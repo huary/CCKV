@@ -13,14 +13,8 @@
 #include "openSSL_aes_locl.h"
 
 namespace openSSL {
-    
-    static int blockSize_s = 16;
-    
-//    void AES_ecb_encrypt(const unsigned char *in, unsigned char *out,
-//                         const AES_KEY *key, const int enc)
     void AES_ecb_encrypt(const unsigned char *in, unsigned char *out,
-                         size_t length, const AES_KEY *key,
-                         unsigned char *ivec, int *num, const int enc)
+                         const AES_KEY *key, const int enc)
     {
         
         assert(in && out && key);

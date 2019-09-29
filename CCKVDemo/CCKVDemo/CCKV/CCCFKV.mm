@@ -14,7 +14,7 @@
 
 #import <vector>
 
-#import "macro.h"
+#import "CCMacro.h"
 #import "CCAESCryptor.h"
 #import "NSObject+CCCodeToTopSuperClass.h"
 #import "CCCFKVDelegate.h"
@@ -365,7 +365,6 @@ static inline void _updateCodeSize(struct CCCFKVContext *ctx, int64_t codeSize)
 
 static inline void _updateKeyItemCnt(struct CCCFKVContext *ctx)
 {
-//    NSLog(@"keyItem=%ld,codeeItem=%d",ctx->_dict.count,ctx->_codeItemCnt);
     ctx->_keyItemCnt = (uint32_t)ctx->_dict.count;
     ctx->_sharedPtrHeaderData->seekTo(_CCHeaderOffsetKeyItemCnt);
     ctx->_sharedPtrHeaderData->writeLittleEndian32(ctx->_keyItemCnt);
@@ -430,10 +429,10 @@ static inline void _updateCryptorInfoWithHashKey(struct CCCFKVContext *ctx, uint
     memcpy(ctx->_sharedPtrContentData->bytes(), contentHeader, CCCFKV_CONTENT_HEADER_SIZE);
 }
 
-static inline BOOL _checkContentCryptKeyHeader(struct CCCFKVContext *ctx)
-{
-    return memcmp(ctx->_sharedPtrContentData->bytes(), ctx->_hashKey, sizeof(ctx->_hashKey)) == 0;
-}
+//static inline BOOL _checkContentCryptKeyHeader(struct CCCFKVContext *ctx)
+//{
+//    return memcmp(ctx->_sharedPtrContentData->bytes(), ctx->_hashKey, sizeof(ctx->_hashKey)) == 0;
+//}
 
 static inline BOOL _shouldFullWriteBack(struct CCCFKVContext *ctx)
 {
@@ -486,7 +485,7 @@ static inline NSMutableDictionary<id, _CCCFKVCacheObject*>* _encodeDictionary(st
         
         encodeObjectToTopSuperClassIntoCodeData(key, NULL, codeData, NULL);
         int64_t startLoc = codeData->currentSeek();
-
+        
         _CCCFKVCacheObjectType cacheObjectType = (_CCCFKVCacheObjectType)(obj.cacheObjectType & 0XFFFF);
         if (cacheObjectType == _CCCFKVCacheObjectTypeDataRange) {
             codeData->appendWriteBuffer(ctx->_sharedPtrPlainContentData->bytes() + obj.dataRange.location, obj.dataRange.length);
@@ -885,12 +884,7 @@ static inline BOOL _updateSize(struct CCCFKVContext *ctx, int64_t size, BOOL tru
     ctx->_sharedPtrPlainContentData = ctx->_sharedPtrContentData;
     
     _readHeaderInfo(ctx);
-    
-//    int64_t maxCodeSize = ctx->_size - CCCFKV_CODE_DATA_HEAD_SIZE - CCCFKV_CODE_DATA_HEAD_SIZE;
-//    if (ctx->_codeSize > maxCodeSize) {
-//        _updateCodeSize(ctx, maxCodeSize);
-//    }
-    
+
     _readContentData(ctx);
     
     return YES;
@@ -1596,23 +1590,25 @@ id CCCFKV::getObjectForKey(id key)
     _sync_lock(ctx->_lock, ^{
         _CCCFKVCacheObject *cacheObject = [ctx->_dict objectForKey:key];
         
-        decodeObject = cacheObject.decodeObject;
-        if (decodeObject == nil) {
-            _CCCFKVCacheObjectType cacheObjectType = (_CCCFKVCacheObjectType)(cacheObject.cacheObjectType & 0XFFFF);
-
-            if (cacheObjectType == _CCCFKVCacheObjectTypeDataRange) {
+        if (cacheObject) {
+            decodeObject = cacheObject.decodeObject;
+            if (decodeObject == nil) {
+                _CCCFKVCacheObjectType cacheObjectType = (_CCCFKVCacheObjectType)(cacheObject.cacheObjectType & 0XFFFF);
                 
-                CCCodeData *plainContentData = ctx->_sharedPtrPlainContentData.get();
-                
-                decodeObject = decodeObjectFromBuffer(plainContentData->bytes() + cacheObject.dataRange.location, cacheObject.dataRange.length, NULL, NULL, NULL);
-            }
-            else if (cacheObjectType == _CCCFKVCacheObjectTypeUncodedObject) {
-                decodeObject = [cacheObject cacheObject];
-            }
-            else if (cacheObjectType == _CCCFKVCacheObjectTypeEncodedData) {
-                decodeObject =  decodeObjectFromData([cacheObject objectEncodedData]);
-            }
-            cacheObject.decodeObject = decodeObject;
+                if (cacheObjectType == _CCCFKVCacheObjectTypeDataRange) {
+                    
+                    CCCodeData *plainContentData = ctx->_sharedPtrPlainContentData.get();
+                    
+                    decodeObject = decodeObjectFromBuffer(plainContentData->bytes() + cacheObject.dataRange.location, cacheObject.dataRange.length, NULL, NULL, NULL);
+                }
+                else if (cacheObjectType == _CCCFKVCacheObjectTypeUncodedObject) {
+                    decodeObject = [cacheObject cacheObject];
+                }
+                else if (cacheObjectType == _CCCFKVCacheObjectTypeEncodedData) {
+                    decodeObject =  decodeObjectFromData([cacheObject objectEncodedData]);
+                }
+                cacheObject.decodeObject = decodeObject;
+            }            
         }
     });
     
@@ -1630,33 +1626,35 @@ float CCCFKV::getFloatForKey(id key)
     _sync_lock(ctx->_lock, ^{
         _CCCFKVCacheObject *cacheObject = [ctx->_dict objectForKey:key];
         
-        if ([cacheObject haveCTypeValue]) {
-            CTypeVal = cacheObject.CTypeValue;
-        }
-        else {
-            id decodeObject = cacheObject.decodeObject;
-            if (decodeObject == nil) {
-                CCCodeItemType codeType = CCCodeItemTypeRealF;
-                if (cacheObject.cacheObjectType == _CCCFKVCacheObjectTypeDataRange) {
-
-                    CCCodeData *plainContentData = ctx->_sharedPtrPlainContentData.get();
-
-                    decodeObject = decodeObjectFromBuffer(plainContentData->bytes() + cacheObject.dataRange.location, cacheObject.dataRange.length, NULL, &codeType, NULL);
-                }
-                else if (cacheObject.cacheObjectType == _CCCFKVCacheObjectTypeUncodedObject) {
-                    decodeObject = [cacheObject cacheObject];
-                }
-                else if (cacheObject.cacheObjectType == _CCCFKVCacheObjectTypeEncodedData) {
-                    NSData *data = [cacheObject objectEncodedData];
-                    decodeObject = decodeObjectFromBuffer((uint8_t*)data.bytes, data.length, NULL, &codeType, NULL);
-                }
-                
-                if (codeType == CCCodeItemTypeRealF) {
-                    float fval = [decodeObject floatValue];
-                    CTypeVal = Int32FromFloat(fval);
+        if (cacheObject) {
+            if ([cacheObject haveCTypeValue]) {
+                CTypeVal = cacheObject.CTypeValue;
+            }
+            else {
+                id decodeObject = cacheObject.decodeObject;
+                if (decodeObject == nil) {
+                    CCCodeItemType codeType = CCCodeItemTypeRealF;
+                    if (cacheObject.cacheObjectType == _CCCFKVCacheObjectTypeDataRange) {
+                        
+                        CCCodeData *plainContentData = ctx->_sharedPtrPlainContentData.get();
+                        
+                        decodeObject = decodeObjectFromBuffer(plainContentData->bytes() + cacheObject.dataRange.location, cacheObject.dataRange.length, NULL, &codeType, NULL);
+                    }
+                    else if (cacheObject.cacheObjectType == _CCCFKVCacheObjectTypeUncodedObject) {
+                        decodeObject = [cacheObject cacheObject];
+                    }
+                    else if (cacheObject.cacheObjectType == _CCCFKVCacheObjectTypeEncodedData) {
+                        NSData *data = [cacheObject objectEncodedData];
+                        decodeObject = decodeObjectFromBuffer((uint8_t*)data.bytes, data.length, NULL, &codeType, NULL);
+                    }
                     
-                    cacheObject.decodeObject = decodeObject;
-                    [cacheObject addCTypeValue:CTypeVal CTypeItemType:codeType];
+                    if (codeType == CCCodeItemTypeRealF) {
+                        float fval = [decodeObject floatValue];
+                        CTypeVal = Int32FromFloat(fval);
+                        
+                        cacheObject.decodeObject = decodeObject;
+                        [cacheObject addCTypeValue:CTypeVal CTypeItemType:codeType];
+                    }
                 }
             }
         }
@@ -1676,33 +1674,35 @@ double CCCFKV::getDoubleForKey(id key)
     _sync_lock(ctx->_lock, ^{
         _CCCFKVCacheObject *cacheObject = [ctx->_dict objectForKey:key];
         
-        if ([cacheObject haveCTypeValue]) {
-            CTypeVal = cacheObject.CTypeValue;
-        }
-        else {
-            id decodeObject = cacheObject.decodeObject;
-            if (decodeObject == nil) {
-                CCCodeItemType codeType = CCCodeItemTypeReal;
-                if (cacheObject.cacheObjectType == _CCCFKVCacheObjectTypeDataRange) {
-
-                    CCCodeData *plainContentData = ctx->_sharedPtrPlainContentData.get();
+        if (cacheObject) {
+            if ([cacheObject haveCTypeValue]) {
+                CTypeVal = cacheObject.CTypeValue;
+            }
+            else {
+                id decodeObject = cacheObject.decodeObject;
+                if (decodeObject == nil) {
+                    CCCodeItemType codeType = CCCodeItemTypeReal;
+                    if (cacheObject.cacheObjectType == _CCCFKVCacheObjectTypeDataRange) {
+                        
+                        CCCodeData *plainContentData = ctx->_sharedPtrPlainContentData.get();
+                        
+                        decodeObject = decodeObjectFromBuffer(plainContentData->bytes() + cacheObject.dataRange.location, cacheObject.dataRange.length, NULL, &codeType, NULL);
+                    }
+                    else if (cacheObject.cacheObjectType == _CCCFKVCacheObjectTypeUncodedObject) {
+                        decodeObject = [cacheObject cacheObject];
+                    }
+                    else if (cacheObject.cacheObjectType == _CCCFKVCacheObjectTypeEncodedData) {
+                        NSData *data = [cacheObject objectEncodedData];
+                        decodeObject = decodeObjectFromBuffer((uint8_t*)data.bytes, data.length, NULL, &codeType, NULL);
+                    }
                     
-                    decodeObject = decodeObjectFromBuffer(plainContentData->bytes() + cacheObject.dataRange.location, cacheObject.dataRange.length, NULL, &codeType, NULL);
-                }
-                else if (cacheObject.cacheObjectType == _CCCFKVCacheObjectTypeUncodedObject) {
-                    decodeObject = [cacheObject cacheObject];
-                }
-                else if (cacheObject.cacheObjectType == _CCCFKVCacheObjectTypeEncodedData) {
-                    NSData *data = [cacheObject objectEncodedData];
-                    decodeObject = decodeObjectFromBuffer((uint8_t*)data.bytes, data.length, NULL, &codeType, NULL);
-                }
-                
-                if (codeType == CCCodeItemTypeReal) {
-                    double dval = [decodeObject doubleValue];
-                    CTypeVal = Int64FromDouble(dval);
-                    
-                    cacheObject.decodeObject = decodeObject;
-                    [cacheObject addCTypeValue:CTypeVal CTypeItemType:codeType];
+                    if (codeType == CCCodeItemTypeReal) {
+                        double dval = [decodeObject doubleValue];
+                        CTypeVal = Int64FromDouble(dval);
+                        
+                        cacheObject.decodeObject = decodeObject;
+                        [cacheObject addCTypeValue:CTypeVal CTypeItemType:codeType];
+                    }
                 }
             }
         }
@@ -1722,32 +1722,34 @@ int64_t CCCFKV::getIntegerForKey(id key)
     _sync_lock(ctx->_lock, ^{
         _CCCFKVCacheObject *cacheObject = [ctx->_dict objectForKey:key];
         
-        if ([cacheObject haveCTypeValue]) {
-            CTypeVal = cacheObject.CTypeValue;
-        }
-        else {
-            id decodeObject = cacheObject.decodeObject;
-            if (decodeObject == nil) {
-                CCCodeItemType codeType = CCCodeItemTypeInteger;
-                if (cacheObject.cacheObjectType == _CCCFKVCacheObjectTypeDataRange) {
+        if (cacheObject) {
+            if ([cacheObject haveCTypeValue]) {
+                CTypeVal = cacheObject.CTypeValue;
+            }
+            else {
+                id decodeObject = cacheObject.decodeObject;
+                if (decodeObject == nil) {
+                    CCCodeItemType codeType = CCCodeItemTypeInteger;
+                    if (cacheObject.cacheObjectType == _CCCFKVCacheObjectTypeDataRange) {
+                        
+                        CCCodeData *plainContentData = ctx->_sharedPtrPlainContentData.get();
+                        
+                        decodeObject = decodeObjectFromBuffer(plainContentData->bytes() + cacheObject.dataRange.location, cacheObject.dataRange.length, NULL, &codeType, NULL);
+                    }
+                    else if (cacheObject.cacheObjectType == _CCCFKVCacheObjectTypeUncodedObject) {
+                        decodeObject = [cacheObject cacheObject];
+                    }
+                    else if (cacheObject.cacheObjectType == _CCCFKVCacheObjectTypeEncodedData) {
+                        NSData *data = [cacheObject objectEncodedData];
+                        decodeObject = decodeObjectFromBuffer((uint8_t*)data.bytes, data.length, NULL, &codeType, NULL);
+                    }
                     
-                    CCCodeData *plainContentData = ctx->_sharedPtrPlainContentData.get();
-                    
-                    decodeObject = decodeObjectFromBuffer(plainContentData->bytes() + cacheObject.dataRange.location, cacheObject.dataRange.length, NULL, &codeType, NULL);
-                }
-                else if (cacheObject.cacheObjectType == _CCCFKVCacheObjectTypeUncodedObject) {
-                    decodeObject = [cacheObject cacheObject];
-                }
-                else if (cacheObject.cacheObjectType == _CCCFKVCacheObjectTypeEncodedData) {
-                    NSData *data = [cacheObject objectEncodedData];
-                    decodeObject = decodeObjectFromBuffer((uint8_t*)data.bytes, data.length, NULL, &codeType, NULL);
-                }
-                
-                if (codeType == CCCodeItemTypeInteger) {
-                    CTypeVal = [decodeObject longLongValue];
-                    
-                    cacheObject.decodeObject = decodeObject;
-                    [cacheObject addCTypeValue:CTypeVal CTypeItemType:codeType];
+                    if (codeType == CCCodeItemTypeInteger) {
+                        CTypeVal = [decodeObject longLongValue];
+                        
+                        cacheObject.decodeObject = decodeObject;
+                        [cacheObject addCTypeValue:CTypeVal CTypeItemType:codeType];
+                    }
                 }
             }
         }

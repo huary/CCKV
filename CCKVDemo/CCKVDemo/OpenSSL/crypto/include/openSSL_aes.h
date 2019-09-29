@@ -47,14 +47,12 @@ namespace openSSL {
     void AES_decrypt(const unsigned char *in, unsigned char *out,
                      const AES_KEY *key);
     
-    //为了统一接口，全部按cfb的接口方式来
     void AES_ecb_encrypt(const unsigned char *in, unsigned char *out,
-                         size_t length, const AES_KEY *key,
-                         unsigned char *ivec, int *num, const int enc);
+                         const AES_KEY *key, const int enc);
     
     void AES_cbc_encrypt(const unsigned char *in, unsigned char *out,
                          size_t length, const AES_KEY *key,
-                         unsigned char *ivec, int *num, const int enc);
+                     unsigned char *ivec, const int enc);
     
     void AES_cfb128_encrypt(const unsigned char *in, unsigned char *out,
                             size_t length, const AES_KEY *key,
@@ -70,7 +68,7 @@ namespace openSSL {
     
     void AES_ofb128_encrypt(const unsigned char *in, unsigned char *out,
                             size_t length, const AES_KEY *key,
-                            unsigned char *ivec, int *num, const int enc);
+                        unsigned char *ivec, int *num);
 #if 0
     
 # if !OPENSSL_API_3

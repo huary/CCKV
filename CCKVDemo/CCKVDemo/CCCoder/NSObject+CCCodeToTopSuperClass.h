@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol CCCodeObjectProtocol <NSObject>
 
-
+@optional;
 +(NSArray<NSString*>*)cc_objectCodeKeyPaths;
 
 +(Class)cc_objectCodeToTopSuperClass;

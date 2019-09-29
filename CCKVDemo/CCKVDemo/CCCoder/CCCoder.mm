@@ -9,7 +9,6 @@
 #import "CCCoder.h"
 #import "CCMacro.h"
 #import <objc/runTime.h>
-//#import "YZHMachTimeUtils.h"
 #import "NSObject+CCCodeToTopSuperClass.h"
 
 
@@ -180,16 +179,16 @@ static inline int64_t zigzagToInteger(int64_t n)
     return (((uint64_t)n) >> 1 ) ^ (-(n & 1));
 }
 
-static inline NSData* _encodeInt64(int64_t val)
-{
-    uint8_t len = TYPEULL_BYTES_N(val);
-    NSMutableData *dt = [NSMutableData dataWithLength:len];
-    uint8_t *ptr = (uint8_t*)dt.mutableBytes;
-    for (uint8_t i = 0; i < len; ++i) {
-        ptr[i] = TYPE_AND(TYPE_RS(val, TYPE_LS(i, 3)), 0XFF);
-    }
-    return dt;//[dt copy];
-}
+//static inline NSData* _encodeInt64(int64_t val)
+//{
+//    uint8_t len = TYPEULL_BYTES_N(val);
+//    NSMutableData *dt = [NSMutableData dataWithLength:len];
+//    uint8_t *ptr = (uint8_t*)dt.mutableBytes;
+//    for (uint8_t i = 0; i < len; ++i) {
+//        ptr[i] = TYPE_AND(TYPE_RS(val, TYPE_LS(i, 3)), 0XFF);
+//    }
+//    return dt;//[dt copy];
+//}
 
 static inline uint8_t _encodeInt64ToBuffer(int64_t val, uint8_t* buffer)
 {
@@ -213,12 +212,12 @@ static inline int64_t _decodeInt64(uint8_t *ptr, uint8_t len)
     return val;
 }
 
-static inline NSData* _encodeDouble(double val)
-{
-    Converter<double, uint64_t> converter;
-    converter.from = val;
-    return converter.encodeToData();
-}
+//static inline NSData* _encodeDouble(double val)
+//{
+//    Converter<double, uint64_t> converter;
+//    converter.from = val;
+//    return converter.encodeToData();
+//}
 
 static inline void _encodeDoubleToBuffer(double val, uint8_t *buffer)
 {
@@ -238,12 +237,12 @@ static inline double _decodeDouble(uint8_t *ptr)
 }
 
 
-static inline NSData* _encodeFloat(float val)
-{
-    Converter<float, uint32_t> converter;
-    converter.from = val;
-    return converter.encodeToData();
-}
+//static inline NSData* _encodeFloat(float val)
+//{
+//    Converter<float, uint32_t> converter;
+//    converter.from = val;
+//    return converter.encodeToData();
+//}
 
 static inline void _encodeFloatToBuffer(float val, uint8_t *buffer)
 {

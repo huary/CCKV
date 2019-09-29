@@ -8,6 +8,7 @@
 
 #import "CCAESCryptor.h"
 #import "openSSL_aes.h"
+#import "CCMacro.h"
 #include <string>
 
 //是否使用智能指针
@@ -64,6 +65,13 @@ typedef struct _CCAESCryptorInfo
     CCCryptMode cryptMode;
 }_CCAESCryptorInfo_S;
 
+void _AES_ofb128_crypt_block_data(const unsigned char *in, unsigned char *out,
+                                  size_t length, const openSSL::AES_KEY *key,
+                                  unsigned char *ivec, int *num, const int enc)
+{
+    AES_ofb128_encrypt(in, out, length, key, ivec, num);
+}
+
 void _AES_cfb1_crypt_block_data(const unsigned char *in, unsigned char *out,
                                 size_t length, const openSSL::AES_KEY *key,
                                 unsigned char *ivec, int *num, const int enc)
@@ -84,7 +92,7 @@ void _AES_cbc_crypt_block_data(const unsigned char *in, unsigned char *out,
     _CCAESCryptKey_S *ptr_cryptKey = (_CCAESCryptKey_S*)key;
     
     openSSL::AES_KEY AESKey = (enc == AES_ENCRYPT) ? *(ptr_cryptKey->ptr_AESEncryptKey) : *(ptr_cryptKey->ptr_AESDecryptKey);
-    openSSL::AES_cbc_encrypt(in, out, length, &AESKey, ivec, num, enc);
+    openSSL::AES_cbc_encrypt(in, out, length, &AESKey, ivec, enc);
 }
 
 void _AES_ecb_crypt_block_data(const unsigned char *in, unsigned char *out,
@@ -106,7 +114,7 @@ void _AES_ecb_crypt_block_data(const unsigned char *in, unsigned char *out,
     uint8_t *outTmp = (uint8_t*)out;
     while (cryptLen < length) {
         openSSL::AES_KEY AESKeyTmp = AESKey;
-        openSSL::AES_ecb_encrypt(inTmp, outTmp, AESBlockSize_s, &AESKeyTmp, ivec, num, enc);
+        openSSL::AES_ecb_encrypt(inTmp, outTmp, &AESKeyTmp, enc);
         
         inTmp += AESBlockSize_s;
         outTmp += AESBlockSize_s;
@@ -280,7 +288,7 @@ BOOL CCAESCryptor::setupCryptor(CCCodeData *key, CCAESKeyType keyType, CCCodeDat
         case CCCryptModeOFB: {
             info->ptrAESKey = &(info->AESEncryptKey);
             info->vectorType = _AESVectorTypePublic;
-            info->ptr_func = (openSSL::AES_ofb128_encrypt);
+            info->ptr_func = _AES_ofb128_crypt_block_data;
             info->encryptSizeBlock = ^int64_t(int64_t inputSize, AESPaddingType paddingType) {
                 return inputSize;
             };

@@ -98,7 +98,7 @@ namespace openSSL {
     size_t CRYPTO_nistcts128_decrypt(const unsigned char *in, unsigned char *out,
                                      size_t len, const void *key,
                                      unsigned char ivec[16], cbc128_f cbc);
-    
+#if 0
     typedef struct gcm128_context GCM128_CONTEXT;
     
     GCM128_CONTEXT *CRYPTO_gcm128_new(void *key, block128_f block);
@@ -124,7 +124,6 @@ namespace openSSL {
     void CRYPTO_gcm128_tag(GCM128_CONTEXT *ctx, unsigned char *tag, size_t len);
     void CRYPTO_gcm128_release(GCM128_CONTEXT *ctx);
     
-#if 0
     typedef struct ccm128_context CCM128_CONTEXT;
     
     void CRYPTO_ccm128_init(CCM128_CONTEXT *ctx,
