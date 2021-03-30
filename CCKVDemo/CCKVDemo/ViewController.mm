@@ -27,6 +27,14 @@
 #import "CCCFKV.h"
 #import "CCKV.h"
 #import "CCMacro.h"
+//#import "CCDictionary.h"
+#include "CCDictionary.h"
+#include "CCArray.h"
+#include "CCType.h"
+
+#include "CCFileMap.hpp"
+
+#include "CCBPTreeIndex.hpp"
 
 #include <string>
 
@@ -55,12 +63,20 @@ typedef NS_ENUM(NSInteger, NSTestOption)
     NSTestOptionString  = 2,
 };
 
+class Test {
+    
+public:
+    Test() {}
+    virtual ~Test() { NSLog(@"%p free",this);}
+};
+
 
 
 
 @interface ViewController ()<YZHUIExcelViewDelegate>
 {
     shared_ptr<CCAESCryptor> _cryptor;
+    CCDictionary *_dictionary;
 }
 
 @property (nonatomic, copy) NSString *basePath;
@@ -104,6 +120,62 @@ typedef NS_ENUM(NSInteger, NSTestOption)
 
 @end
 
+static inline NSArray<NSString*>* _propertiesForClass(Class cls)
+{
+    uint32_t count = 0;
+    objc_property_t *properties = class_copyPropertyList(cls, &count);
+    NSMutableArray *list = [NSMutableArray new];
+    for (uint32_t i = 0; i < count; ++i) {
+        @autoreleasepool {
+            objc_property_t property = properties[i];
+            const char *nameStr = property_getName(property);
+            NSString *name = [NSString stringWithUTF8String:nameStr];
+            
+            const char *attr = property_getAttributes(property);
+            NSString *attrName = [NSString stringWithUTF8String:attr];
+            
+            NSLog(@"attrName=%@",attrName);
+            //只保护property的，分类动态联合的不进行编码
+            NSString *contains = [NSString stringWithFormat:@"V_%@",name];
+            if ([attrName containsString:contains]) {
+//                NSLog(@"name=%@",name);
+                [list addObject:name];
+            }
+        }
+    }
+    if (properties) {
+        free(properties);
+    }
+    return list;//[list copy];
+}
+
+bool _keyEqual(void *target, CCU64Ptr value1, CCU64Ptr value2)
+{
+    return value1 == value2;
+}
+
+bool _valueEqual(void *target, CCU64Ptr value1, CCU64Ptr value2)
+{
+    return value1 == value2;
+}
+
+CCHashCode _hash(void *target, CCU64Ptr key)
+{
+    return key;
+}
+
+bool _HashTableEnumerator(PCCHashTable_S ht, CCU64Ptr key, CCU64Ptr value)
+{
+    NSLog(@"-----key=%@,value=%@",@(key),@(value));
+    return true;
+}
+
+
+bool _arrayEnumerator(PCCArray_S array, CCU64Ptr value, CCIndex index)
+{
+    NSLog(@"-----idx=%@,value=%@",@(index),@(value));
+    return true;
+}
 
 
 @implementation ViewController
@@ -115,9 +187,21 @@ typedef NS_ENUM(NSInteger, NSTestOption)
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-//    [self _testCoder];
+//    return;
+//    [self _testMapBuffer];
+//    return;
     
-    [self _setupDefaultData];
+//    [self _testDictionary];
+//
+//    return;
+    
+//    [self _testProperties];
+//    [self _testSharedPtr];
+    
+//    [self _testCoder];
+//    return;
+//
+//    [self _setupDefaultData];
     
 //    [self _testAccount];
     
@@ -125,9 +209,183 @@ typedef NS_ENUM(NSInteger, NSTestOption)
     
 //    [self _testCryptor];
     
-    [self _setupChildView];
+//    [self _setupChildView];
     
-    [self _startTest:self.loopCnt testOption:self.testOption];
+//    [self _startTest:self.loopCnt testOption:self.testOption];
+}
+
+- (void)_testMapBuffer
+{
+    NSString *path = [YZHKVUtils applicationDocumentsDirectory:@"testMapBuffer"];
+    NSLog(@"path=%@",path);
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    NSLog(@"data=%@",data);
+
+    CCFileMap *fileMap =new CCFileMap(path.UTF8String);
+    
+    int mode = CC_F_READ;
+
+    fileMap->open(CC_F_RDWR);
+    
+//    fileMap->update(0, 100);
+//    NSMutableData *data = [NSMutableData dataWithCapacity:10];
+//    memcpy((void*)data.bytes, ptr, 10);
+//    NSLog(@"data=%@",data);
+    
+    CCBuffer *b1 = fileMap->createMapBuffer(0, 100, CC_F_RDWR);
+//    CCBuffer *b2 = fileMap->createMapBuffer(b1->bufferSize(), 4, CC_F_RDWR);
+    b1->writeByte(8);
+    b1->writeByte(9);
+//    exit(1);
+//    b1->seekTo(0);
+//    uint8_t a = b1->readByte();
+//    NSLog(@"a=%@",@(a));
+    
+//    b2->seekTo(4097);
+//    b2->writeByte(2);
+//    b2->seekTo(0);
+//    uint8_t b = b2->readByte();
+//    NSLog(@"b=%@",@(b));
+    
+//    fileMap->destroyMapBuffer(b1);
+//    fileMap->destroyMapBuffer(b2);
+//
+//    fileMap->close();
+}
+
+- (void)_testDictionary
+{
+    CCDictionary *ht = nullptr;
+    
+    CCU64Ptr *keys = nullptr;
+    CCU64Ptr *vals = nullptr;
+
+    if (self->_dictionary == nullptr) {
+        struct CCDictionaryKeyFunc keyFunc = {NULL, NULL, _keyEqual, _hash};
+        struct CCDictionaryValueFunc valueFunc = {NULL, NULL, _valueEqual};
+        self->_dictionary = CCDictionaryCreate(NULL, NULL, NULL, 0, &keyFunc, &valueFunc, CCHashTableStyleLinear);
+        
+        ht = CCDictionaryCreate(NULL, NULL, NULL, 0, &keyFunc, &valueFunc, CCHashTableStyleLinear);
+    }
+    
+    CCCount capacity = 1000000;
+    CCHashTableSetCapacity(self->_dictionary, capacity);
+    
+    keys = (CCU64Ptr *)calloc(capacity, sizeof(CCU64Ptr));
+    vals = (CCU64Ptr *)calloc(capacity, sizeof(CCU64Ptr));
+    
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    CCIndex j = 0;
+    for (CCIndex i = 0; i < capacity; ++i) {
+        CCU64Ptr key = arc4random();
+        CCU64Ptr val = arc4random();
+        if (![dict objectForKey:@(key)]) {
+            [dict setObject:@(val) forKey:@(key)];
+            keys[j] = key;
+            vals[j] = val;
+            ++j;
+            bool ret = CCHashTableAddValue(self->_dictionary, key, val);
+            if (ret == false) {
+                NSLog(@"add failed,key=%@,val=%@",@(key),@(val));
+            }
+        }
+    }
+    
+    __block CCU64Ptr k = 0;
+    [dict enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        CCU64Ptr keyTmp = [key longValue];
+        CCU64Ptr valTmp = [obj longValue];
+        CCU64Ptr val = 0;
+        CCHashTableGetValueOfKeyIfPresent(self->_dictionary, keyTmp, &val);
+        if (val != valTmp) {
+            NSLog(@"keyT=%@,valT=%@,val=%@",@(keyTmp),@(valTmp),@(val));
+            *stop = YES;
+            k = keyTmp;
+        }
+    }];
+    
+    
+    CCU64Ptr val = 0;
+    if (k) {
+        CCHashTableGetValueOfKeyIfPresent(self->_dictionary, k, &val);
+    }
+    
+    
+//    NSMutableDictionary *a = [NSMutableDictionary dictionaryWithCapacity:capacity];
+    NSMutableDictionary *a = [NSMutableDictionary dictionary];
+//    CCHashTableSetCapacity(ht, capacity);
+
+    
+    NSLog(@"dict=");
+    [YZHMachTimeUtils elapsedMSTimeInBlock:^{
+        [dict enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+            [a setObject:obj forKey:key];
+        }];
+    }];
+    
+    
+    NSLog(@"hashtable=");
+    [YZHMachTimeUtils elapsedMSTimeInBlock:^{
+        for (CCIndex i = 0; i < j; ++i) {
+            CCU64Ptr keyTmp = keys[i];
+            CCU64Ptr valTmp = vals[i];
+//            CCHashTableAddValue(ht, keyTmp, valTmp);
+            CCHashTableSetValue(ht, keyTmp, valTmp);
+        }
+//        [dict enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+//            CCU64Ptr keyTmp = [key longValue];
+//            CCU64Ptr valTmp = [obj longValue];
+//            CCHashTableAddValue(ht, keyTmp, valTmp);
+////            CCHashTableAddValue(ht, keyt, objt);
+//        }];
+    }];
+    
+    free(keys);
+    free(vals);
+    
+    
+//    CCU64Ptr base = 100;
+//    CCHashTableAddValue(self->_dictionary, 1, base + 1);
+//    CCHashTableAddValue(self->_dictionary, 2, base + 2);
+//    CCHashTableAddValue(self->_dictionary, 3, base + 3);
+//    CCHashTableAddValue(self->_dictionary, 4, base + 4);
+//    CCHashTableAddValue(self->_dictionary, 5, base + 5);
+//    CCHashTableAddValue(self->_dictionary, 14, base + 14);
+//    CCHashTableAddValue(self->_dictionary, 27, base + 27);
+    
+//    CCHashTableAddValue(self->_dictionary, 100, base + 100);
+    
+//    CCHashTableEnumerate(self->_dictionary, _HashTableEnumerator);
+    
+    
+    NSLog(@"usedCnt=%@,dict.cnt=%@",@(CCHashTableGetCount(self->_dictionary)),@(dict.count));
+    
+    CCHashTableDeallocate(self->_dictionary);
+    self->_dictionary = NULL;
+}
+
+- (void)_testProperties
+{
+    _propertiesForClass([Account class]);
+}
+
+- (void)_testSharedPtr
+{
+    NSString *key = @"1234567890123456";
+    NSData *keyData = [key dataUsingEncoding:NSUTF8StringEncoding];
+    
+//    CCCodeData codeKeyData(keyData);
+//    _cryptor = make_shared<CCAESCryptor>(&codeKeyData, CCAESKeyType128, nullptr, CCCryptModeECB);
+    shared_ptr<Test> src = make_shared<Test>();
+    NSLog(@"src.get=%p",src.get());
+    shared_ptr<Test> old;
+    src.swap(old);
+    NSLog(@"src.get=%p,old.get=%p",src.get(),old.get());
+    src = make_shared<Test>();
+    NSLog(@"src2.get=%p",src.get());
+    src.reset();
+    old.reset();
+    NSLog(@"end");
 }
 
 - (NSMutableArray*)intKeys
@@ -311,6 +569,14 @@ static inline BOOL objectIsKindOfClass(id object, Class cls)
 
 - (void)_setupChildView
 {
+    
+    int pageSize = getpagesize();
+    
+    int64_t tmp = TYPE_NOT(pageSize - 1);
+    
+    int64_t size = 132029352;
+    NSLog(@"tmp=%ld, size=%ld", tmp, (size & tmp) + pageSize);
+    
     self.view.backgroundColor = [UIColor whiteColor];
     
     CGFloat x = 10;
@@ -471,7 +737,7 @@ static inline BOOL objectIsKindOfClass(id object, Class cls)
     [YZHMachTimeUtils elapsedMSTimeInBlock:^{
         for (NSInteger i = 0; i < cnt; ++i) {
             NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict options:0 error:NULL];
-            id obj = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableLeaves error:NULL];
+//            id obj = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableLeaves error:NULL];
         }
     }];
     
@@ -480,13 +746,14 @@ static inline BOOL objectIsKindOfClass(id object, Class cls)
     
     __block NSDictionary *decodeDict = nil;
     
+    NSLog(@"encode cost:");
     [YZHMachTimeUtils elapsedMSTimeInBlock:^{
         for (NSInteger i = 0; i < cnt; ++i) {
             codeData->truncateTo(0);
             encodeObjectToTopSuperClassIntoCodeData(dict, NULL, codeData, NULL);
 //            NSLog(@"data=%@",codeData->copyData());
 //            NSLog(@"dtlen=%lld",codeData->dataSize());
-            decodeDict = decodeObjectFromBuffer(codeData->bytes(), codeData->currentSeek(), NULL, NULL, NULL);
+//            decodeDict = decodeObjectFromBuffer(codeData->bytes(), codeData->currentSeek(), NULL, NULL, NULL);
 //            NSLog(@"decodeDict=%@",decodeDict);
         }
     }];
@@ -1512,7 +1779,112 @@ static inline BOOL objectIsKindOfClass(id object, Class cls)
 
 
 
+- (void)pri_testArray
+{
+    CCArrayContext ctx;
+    ctx.retain = NULL;
+    ctx.release = NULL;
+    ctx.equal = NULL;
+    
+    CCArrayOption_U option;
+    option.option = 0;
+    
+    PCCArray_S array = CCArrayCreate(NULL, NULL, 0, &ctx, option);
+    CCArraySetCapacity(array, 8);
+//    CCArrayAppendValue(array, 2);
+//    CCArrayAppendValue(array, 3);
+//    CCArrayAppendValue(array, 4);
+//    CCArrayAppendValue(array, 5);
 
+#if 1
+    //insert
+//    CCArrayAppendValue(array, 7);
+//    CCArrayAppendValue(array, 8);
+//
+//    CCArrayInsertValueAtIndex(array, 0, 1);
+//    CCArrayInsertValueAtIndex(array, 1, 6);
+//    CCArrayInsertValueAtIndex(array, 1, 5);
+//    CCArrayInsertValueAtIndex(array, 1, 4);
+//    CCArrayInsertValueAtIndex(array, 1, 2);
+//
+//    CCArrayInsertValueAtIndex(array, 2, 3);
+    
+    CCArrayAppendValue(array, 1);
+    CCArrayAppendValue(array, 2);
+    CCArrayAppendValue(array, 3);
+    CCArrayAppendValue(array, 4);
+    CCArrayAppendValue(array, 5);
+    CCArrayAppendValue(array, 6);
+    CCArrayAppendValue(array, 7);
+    CCArrayAppendValue(array, 8);
+    
+    NSLog(@"==end");
+    CCArrayPrint(array, 8);
+    
+    
+    //delete
+//     CCArrayRemoveValueAtIndex(array, 2);
+    CCArrayRemoveValuesAtRange(array, CCRangeMake(3,2));
+//    CCArrayRemoveValuesAtRange(array, CCRangeMake(2,3));
+    CCArrayPrint(array, 8);
+#endif
+#if 0
+    CCArrayAppendValue(array, 3);
+    CCArrayInsertValueAtIndex(array, 0, 2);
+    CCArrayInsertValueAtIndex(array, 0, 1);
+//    CCArrayInsertValueAtIndex(array, 0, 1);
+
+    CCArrayAppendValue(array, 4);
+    CCArrayAppendValue(array, 5);
+    CCArrayAppendValue(array, 6);
+    CCArrayAppendValue(array, 7);
+    CCArrayAppendValue(array, 8);
+    CCArrayPrint(array, 8);
+    
+    CCArrayRemoveValueAtIndex(array, 7);
+    CCArrayPrint(array, 8);
+#endif
+    CCArrayDeallocate(array);
+}
+
+
+
+- (NSDictionary*)pri_createBPTreeData:(NSInteger)count
+{
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    for (CCIndex i = 0; i < count; ++i) {
+       uint32_t key = arc4random();
+       uint32_t val = arc4random();
+       if (![dict objectForKey:@(key)]) {
+           [dict setObject:@(val) forKey:@(key)];
+       }
+    }
+    return dict;
+}
+
+- (void)pri_testBPTreeIndex
+{
+    NSString *path = [YZHKVUtils applicationDocumentsDirectory:@"testBPIndex"];
+    NSLog(@"path=%@",path);
+//    std::string filePath =
+    CCUInt16_t pageNodeCnt = 8;
+    CCBTIndexSize_T indexSize = 8;
+    
+    NSDictionary *dict = [self pri_createBPTreeData:64];
+    
+    CCBPTreeIndex *bpTreeIndex = new CCBPTreeIndex(path.UTF8String, pageNodeCnt, indexSize);
+    
+    [dict enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+
+        uint32_t iKey = [key intValue];
+        uint32_t iVal = [obj intValue];
+
+        bpTreeIndex->insertIndex((CCUByte_t*)&iKey, sizeof(uint32_t), iVal);
+    }];
+    
+    
+    delete bpTreeIndex;
+}
 
 
 
@@ -1545,7 +1917,13 @@ static inline BOOL objectIsKindOfClass(id object, Class cls)
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    [self.view endEditing:YES];
+    [self _testMapBuffer];
+//    [self.view endEditing:YES];
+    
+//    [self pri_testArray];
+    
+    
+//    [self pri_testBPTreeIndex];
 }
 
 

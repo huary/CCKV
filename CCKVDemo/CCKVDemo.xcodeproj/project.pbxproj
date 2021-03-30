@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C04C98E23FBCD0700EBC28A /* CCFileMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C04C98C23FBCD0700EBC28A /* CCFileMap.cpp */; };
+		1C30A76D235B75BB00160F6A /* CCBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C30A76C235B75BB00160F6A /* CCBuffer.cpp */; };
+		1C30A770235B75E300160F6A /* CCMutableBuffer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1C30A76F235B75E300160F6A /* CCMutableBuffer.mm */; };
 		1C36BDF82335FF78008C1DD6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1C36BDF42335FF78008C1DD6 /* LaunchScreen.storyboard */; };
 		1C36BDF92335FF78008C1DD6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1C36BDF62335FF78008C1DD6 /* Main.storyboard */; };
 		1C4D978C2331D9BF00ACEE5D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C4D978B2331D9BF00ACEE5D /* AppDelegate.m */; };
@@ -52,6 +55,11 @@
 		1C4D98402331DB2000ACEE5D /* UIView+Geometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C4D98102331DB2000ACEE5D /* UIView+Geometry.m */; };
 		1C4D98412331DB2000ACEE5D /* CALayer+Geometry.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C4D98142331DB2000ACEE5D /* CALayer+Geometry.m */; };
 		1C4D984E2331DBB700ACEE5D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C4D984D2331DBB700ACEE5D /* libz.tbd */; };
+		1C70C4DA23B62DBE0006F18E /* CCBase.c in Sources */ = {isa = PBXBuildFile; fileRef = 1C70C4D523B62DBD0006F18E /* CCBase.c */; };
+		1C70C4DB23B62DBE0006F18E /* CCHashTable.c in Sources */ = {isa = PBXBuildFile; fileRef = 1C70C4D823B62DBD0006F18E /* CCHashTable.c */; };
+		1CBFF66223C0B105005224C9 /* CCDictionary.c in Sources */ = {isa = PBXBuildFile; fileRef = 1CBFF66123C0B105005224C9 /* CCDictionary.c */; };
+		1CC8F32724AB51B700D357B8 /* CCArray.c in Sources */ = {isa = PBXBuildFile; fileRef = 1CC8F32624AB51B700D357B8 /* CCArray.c */; };
+		1CD8649F23FE936F002C89AC /* CCBPTreeIndex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CD8649D23FE936F002C89AC /* CCBPTreeIndex.cpp */; };
 		51D9C3EFCE03B6BD76228C58 /* libPods-CCKVDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B6066CE8D3113060B16B0C6 /* libPods-CCKVDemo.a */; };
 /* End PBXBuildFile section */
 
@@ -73,6 +81,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1C04C98C23FBCD0700EBC28A /* CCFileMap.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CCFileMap.cpp; sourceTree = "<group>"; };
+		1C04C98D23FBCD0700EBC28A /* CCFileMap.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CCFileMap.hpp; sourceTree = "<group>"; };
+		1C30A76B235B75BB00160F6A /* CCBuffer.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = CCBuffer.h; sourceTree = "<group>"; };
+		1C30A76C235B75BB00160F6A /* CCBuffer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = CCBuffer.cpp; sourceTree = "<group>"; };
+		1C30A76E235B75E300160F6A /* CCMutableBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CCMutableBuffer.h; sourceTree = "<group>"; };
+		1C30A76F235B75E300160F6A /* CCMutableBuffer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CCMutableBuffer.mm; sourceTree = "<group>"; };
 		1C36BDF52335FF78008C1DD6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1C36BDF72335FF78008C1DD6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1C4D97872331D9BF00ACEE5D /* CCKVDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CCKVDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -158,6 +172,17 @@
 		1C4D98152331DB2000ACEE5D /* CALayer+Geometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CALayer+Geometry.h"; sourceTree = "<group>"; };
 		1C4D98162331DB2000ACEE5D /* PrefixHeader.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		1C4D984D2331DBB700ACEE5D /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		1C70C4D523B62DBD0006F18E /* CCBase.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = CCBase.c; sourceTree = "<group>"; };
+		1C70C4D623B62DBD0006F18E /* CCBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCBase.h; sourceTree = "<group>"; };
+		1C70C4D823B62DBD0006F18E /* CCHashTable.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = CCHashTable.c; sourceTree = "<group>"; };
+		1C70C4D923B62DBD0006F18E /* CCHashTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCHashTable.h; sourceTree = "<group>"; };
+		1C70C4DD23B62E920006F18E /* CCType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CCType.h; sourceTree = "<group>"; };
+		1CBFF66023C0B105005224C9 /* CCDictionary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CCDictionary.h; sourceTree = "<group>"; };
+		1CBFF66123C0B105005224C9 /* CCDictionary.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = CCDictionary.c; sourceTree = "<group>"; };
+		1CC8F32524AB51B700D357B8 /* CCArray.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CCArray.h; sourceTree = "<group>"; };
+		1CC8F32624AB51B700D357B8 /* CCArray.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = CCArray.c; sourceTree = "<group>"; };
+		1CD8649D23FE936F002C89AC /* CCBPTreeIndex.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = CCBPTreeIndex.cpp; sourceTree = "<group>"; };
+		1CD8649E23FE936F002C89AC /* CCBPTreeIndex.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CCBPTreeIndex.hpp; sourceTree = "<group>"; };
 		63C42ABA435C63455ACF24C9 /* Pods-CCKVDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CCKVDemo.debug.xcconfig"; path = "Target Support Files/Pods-CCKVDemo/Pods-CCKVDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		9B6066CE8D3113060B16B0C6 /* libPods-CCKVDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CCKVDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA5E18F3DB0DB7BB54437AF8 /* Pods-CCKVDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CCKVDemo.release.xcconfig"; path = "Target Support Files/Pods-CCKVDemo/Pods-CCKVDemo.release.xcconfig"; sourceTree = "<group>"; };
@@ -215,27 +240,28 @@
 		1C4D97892331D9BF00ACEE5D /* CCKVDemo */ = {
 			isa = PBXGroup;
 			children = (
-				1C36BDF42335FF78008C1DD6 /* LaunchScreen.storyboard */,
-				1C36BDF62335FF78008C1DD6 /* Main.storyboard */,
+				1C4D978A2331D9BF00ACEE5D /* AppDelegate.h */,
+				1C4D978B2331D9BF00ACEE5D /* AppDelegate.m */,
+				1C4D97932331D9C000ACEE5D /* Assets.xcassets */,
+				1C4D97EE2331DB2000ACEE5D /* CCCoder */,
+				1C70C4D223B62DBD0006F18E /* CCFoundation */,
+				1C4D97CA2331DB1F00ACEE5D /* CCKV */,
 				1C4D97F82331DB2000ACEE5D /* common */,
+				1C4D97982331D9C000ACEE5D /* Info.plist */,
+				1C36BDF42335FF78008C1DD6 /* LaunchScreen.storyboard */,
+				1C4D97992331D9C000ACEE5D /* main.m */,
+				1C36BDF62335FF78008C1DD6 /* Main.storyboard */,
 				1C4D97D42331DB2000ACEE5D /* OpenSSL */,
 				1C4D97C62331DB1F00ACEE5D /* PrefixHeader.pch */,
 				1C4D97BD2331DB1F00ACEE5D /* TestModel */,
 				1C4D97C92331DB1F00ACEE5D /* UIReuseCell.h */,
 				1C4D97BC2331DB1F00ACEE5D /* UIReuseCell.m */,
+				1C4D978D2331D9BF00ACEE5D /* ViewController.h */,
 				1C4D97F72331DB2000ACEE5D /* ViewController.mm */,
-				1C4D97EE2331DB2000ACEE5D /* CCCoder */,
-				1C4D97CA2331DB1F00ACEE5D /* CCKV */,
 				1C4D97C82331DB1F00ACEE5D /* YZHKVUtils.h */,
 				1C4D97C42331DB1F00ACEE5D /* YZHKVUtils.m */,
 				1C4D97C72331DB1F00ACEE5D /* YZHMachTimeUtils.h */,
 				1C4D97C52331DB1F00ACEE5D /* YZHMachTimeUtils.m */,
-				1C4D978A2331D9BF00ACEE5D /* AppDelegate.h */,
-				1C4D978B2331D9BF00ACEE5D /* AppDelegate.m */,
-				1C4D978D2331D9BF00ACEE5D /* ViewController.h */,
-				1C4D97932331D9C000ACEE5D /* Assets.xcassets */,
-				1C4D97982331D9C000ACEE5D /* Info.plist */,
-				1C4D97992331D9C000ACEE5D /* main.m */,
 			);
 			path = CCKVDemo;
 			sourceTree = "<group>";
@@ -274,11 +300,15 @@
 		1C4D97CA2331DB1F00ACEE5D /* CCKV */ = {
 			isa = PBXGroup;
 			children = (
-				1C4D97CB2331DB1F00ACEE5D /* CCKV.h */,
-				1C4D97CC2331DB1F00ACEE5D /* CCCFKVDelegate.mm */,
-				1C4D97CE2331DB1F00ACEE5D /* CCCFKV.mm */,
+				1CD8649D23FE936F002C89AC /* CCBPTreeIndex.cpp */,
+				1CD8649E23FE936F002C89AC /* CCBPTreeIndex.hpp */,
 				1C4D97CF2331DB1F00ACEE5D /* CCCFKV.h */,
+				1C4D97CE2331DB1F00ACEE5D /* CCCFKV.mm */,
 				1C4D97D22331DB1F00ACEE5D /* CCCFKVDelegate.h */,
+				1C4D97CC2331DB1F00ACEE5D /* CCCFKVDelegate.mm */,
+				1C04C98C23FBCD0700EBC28A /* CCFileMap.cpp */,
+				1C04C98D23FBCD0700EBC28A /* CCFileMap.hpp */,
+				1C4D97CB2331DB1F00ACEE5D /* CCKV.h */,
 				1C4D97D32331DB1F00ACEE5D /* CCKV.mm */,
 			);
 			path = CCKV;
@@ -353,6 +383,10 @@
 				1C4D97F32331DB2000ACEE5D /* CCMacro.h */,
 				1C4D97F22331DB2000ACEE5D /* NSObject+CCCodeToTopSuperClass.h */,
 				1C4D97F52331DB2000ACEE5D /* NSObject+CCCodeToTopSuperClass.m */,
+				1C30A76B235B75BB00160F6A /* CCBuffer.h */,
+				1C30A76C235B75BB00160F6A /* CCBuffer.cpp */,
+				1C30A76E235B75E300160F6A /* CCMutableBuffer.h */,
+				1C30A76F235B75E300160F6A /* CCMutableBuffer.mm */,
 			);
 			path = CCCoder;
 			sourceTree = "<group>";
@@ -457,6 +491,62 @@
 				9B6066CE8D3113060B16B0C6 /* libPods-CCKVDemo.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		1C70C4D223B62DBD0006F18E /* CCFoundation */ = {
+			isa = PBXGroup;
+			children = (
+				1CC8F32424AB518F00D357B8 /* CCArray */,
+				1C70C4DC23B62E610006F18E /* CCType */,
+				1C70C4D323B62DBD0006F18E /* CCDictionary */,
+				1C70C4D423B62DBD0006F18E /* CCBase */,
+				1C70C4D723B62DBD0006F18E /* CCHashTable */,
+			);
+			path = CCFoundation;
+			sourceTree = "<group>";
+		};
+		1C70C4D323B62DBD0006F18E /* CCDictionary */ = {
+			isa = PBXGroup;
+			children = (
+				1CBFF66023C0B105005224C9 /* CCDictionary.h */,
+				1CBFF66123C0B105005224C9 /* CCDictionary.c */,
+			);
+			path = CCDictionary;
+			sourceTree = "<group>";
+		};
+		1C70C4D423B62DBD0006F18E /* CCBase */ = {
+			isa = PBXGroup;
+			children = (
+				1C70C4D523B62DBD0006F18E /* CCBase.c */,
+				1C70C4D623B62DBD0006F18E /* CCBase.h */,
+			);
+			path = CCBase;
+			sourceTree = "<group>";
+		};
+		1C70C4D723B62DBD0006F18E /* CCHashTable */ = {
+			isa = PBXGroup;
+			children = (
+				1C70C4D823B62DBD0006F18E /* CCHashTable.c */,
+				1C70C4D923B62DBD0006F18E /* CCHashTable.h */,
+			);
+			path = CCHashTable;
+			sourceTree = "<group>";
+		};
+		1C70C4DC23B62E610006F18E /* CCType */ = {
+			isa = PBXGroup;
+			children = (
+				1C70C4DD23B62E920006F18E /* CCType.h */,
+			);
+			path = CCType;
+			sourceTree = "<group>";
+		};
+		1CC8F32424AB518F00D357B8 /* CCArray */ = {
+			isa = PBXGroup;
+			children = (
+				1CC8F32524AB51B700D357B8 /* CCArray.h */,
+				1CC8F32624AB51B700D357B8 /* CCArray.c */,
+			);
+			path = CCArray;
 			sourceTree = "<group>";
 		};
 		3F9A29144434435A068C3293 /* Pods */ = {
@@ -627,7 +717,9 @@
 				1C4D98312331DB2000ACEE5D /* openSSL_aes_cbc.cpp in Sources */,
 				1C4D982F2331DB2000ACEE5D /* openSSL_aes_cfb.cpp in Sources */,
 				1C4D983F2331DB2000ACEE5D /* NSIndexPath+YZHUIExcelView.m in Sources */,
+				1CBFF66223C0B105005224C9 /* CCDictionary.c in Sources */,
 				1C4D98412331DB2000ACEE5D /* CALayer+Geometry.m in Sources */,
+				1CC8F32724AB51B700D357B8 /* CCArray.c in Sources */,
 				1C4D98242331DB2000ACEE5D /* CCKV.mm in Sources */,
 				1C4D981B2331DB2000ACEE5D /* X.m in Sources */,
 				1C4D981E2331DB2000ACEE5D /* YZHMachTimeUtils.m in Sources */,
@@ -638,6 +730,7 @@
 				1C4D979A2331D9C000ACEE5D /* main.m in Sources */,
 				1C4D982B2331DB2000ACEE5D /* openSSL_ocb128.cpp in Sources */,
 				1C4D98372331DB2000ACEE5D /* ViewController.mm in Sources */,
+				1C70C4DB23B62DBE0006F18E /* CCHashTable.c in Sources */,
 				1C4D982E2331DB2000ACEE5D /* openSSL_aes_core.cpp in Sources */,
 				1C4D98282331DB2000ACEE5D /* openSSL_ofb128.cpp in Sources */,
 				1C4D982C2331DB2000ACEE5D /* openSSL_ctr128.cpp in Sources */,
@@ -650,16 +743,21 @@
 				1C4D98322331DB2000ACEE5D /* openSSL_aes_ecb.cpp in Sources */,
 				1C4D983D2331DB2000ACEE5D /* YZHUIExcelViewRowCell.m in Sources */,
 				1C4D983C2331DB2000ACEE5D /* YZHUIExcelContentView.m in Sources */,
+				1C30A770235B75E300160F6A /* CCMutableBuffer.mm in Sources */,
 				1C4D98392331DB2000ACEE5D /* YZHUIExcelViewRowCollectionViewLayout.m in Sources */,
 				1C4D98352331DB2000ACEE5D /* NSObject+CCCodeToTopSuperClass.m in Sources */,
 				1C4D98252331DB2000ACEE5D /* openSSL_cfb128.cpp in Sources */,
+				1C70C4DA23B62DBE0006F18E /* CCBase.c in Sources */,
 				1C4D981C2331DB2000ACEE5D /* Account.m in Sources */,
 				1C4D98192331DB2000ACEE5D /* UIReuseCell.m in Sources */,
 				1C4D98362331DB2000ACEE5D /* CCCoder.mm in Sources */,
+				1CD8649F23FE936F002C89AC /* CCBPTreeIndex.cpp in Sources */,
 				1C4D983A2331DB2000ACEE5D /* YZHUIExcelItemCell.m in Sources */,
 				1C4D978C2331D9BF00ACEE5D /* AppDelegate.m in Sources */,
 				1C4D982A2331DB2000ACEE5D /* openSSL_xts128.cpp in Sources */,
+				1C04C98E23FBCD0700EBC28A /* CCFileMap.cpp in Sources */,
 				1C4D983E2331DB2000ACEE5D /* YZHUIExcelViewType.m in Sources */,
+				1C30A76D235B75BB00160F6A /* CCBuffer.cpp in Sources */,
 				1C4D98332331DB2000ACEE5D /* CCAESCryptor.mm in Sources */,
 				1C4D98302331DB2000ACEE5D /* openSSL_aes_ofb.cpp in Sources */,
 				1C4D98262331DB2000ACEE5D /* openSSL_cbc128.cpp in Sources */,
@@ -835,7 +933,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 7C6YPJQ829;
+				DEVELOPMENT_TEAM = P53688J6G7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = CCKVDemo/PrefixHeader.pch;
@@ -845,7 +943,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = yuan.CCKVDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = fm.lizhi.CCKVDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -857,7 +955,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 7C6YPJQ829;
+				DEVELOPMENT_TEAM = P53688J6G7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = CCKVDemo/PrefixHeader.pch;
@@ -867,7 +965,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = yuan.CCKVDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = fm.lizhi..CCKVDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

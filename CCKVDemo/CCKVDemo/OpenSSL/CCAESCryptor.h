@@ -68,6 +68,12 @@ public:
   
     void reset();
     
+    //标记此时的标签
+    void markTag(int32_t tag);
+    
+    //还原到该标签
+    void resetToTag(int32_t tag);
+    
     BOOL isValidCryptor();
     
     CCAESKeyType getKeyType();

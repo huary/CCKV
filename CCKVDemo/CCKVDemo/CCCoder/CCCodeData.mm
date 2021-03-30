@@ -215,6 +215,12 @@ int64_t CCCodeData::remSize()
     return _size - _length;
 }
 
+//从position计算remSize
+int64_t CCCodeData::remSeekSize()
+{
+    return _size - _position;
+}
+
 void CCCodeData::bzero()
 {
     if (_ptr == NULL) {
@@ -357,7 +363,7 @@ CCMutableCodeData::CCMutableCodeData(CCCodeData *codeData) : CCCodeData(nil)
     _ptr = (uint8_t*)calloc((size_t)_size, sizeof(uint8_t));
     if (_ptr && codeData->bytes()) {
         memcpy(_ptr, (uint8_t*)codeData->bytes(), (size_t)dataSize);
-        seekTo(_size);
+        seekTo(dataSize);
     }
 }
 
@@ -377,6 +383,17 @@ BOOL CCMutableCodeData::ensureRemSize(int64_t remSize)
         return YES;
     }
     int64_t extra = MAX(remSize, expandBufferSize_s);
+    return increaseBufferSizeBy(extra);
+}
+
+//这个是从position计算remSize
+BOOL CCMutableCodeData::ensureRemSeekSize(int64_t remSeekSize)
+{
+    int64_t leftSize = CCCodeData::remSeekSize();
+    if (leftSize > remSeekSize) {
+        return YES;
+    }
+    int64_t extra = MAX(remSeekSize, expandBufferSize_s);
     return increaseBufferSizeBy(extra);
 }
 

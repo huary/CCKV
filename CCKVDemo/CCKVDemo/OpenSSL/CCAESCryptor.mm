@@ -10,6 +10,7 @@
 #import "openSSL_aes.h"
 #import "CCMacro.h"
 #include <string>
+#include <unordered_map>
 
 //是否使用智能指针
 #define CRYPTOR_USE_SMT_PTR    (1)
@@ -35,6 +36,15 @@ typedef struct _CCAESCryptKey
     openSSL::AES_KEY *ptr_AESDecryptKey;
 }_CCAESCryptKey_S, *_PTR_CCAESCryptKey_S;
 
+typedef struct _CCAESCryptorTag
+{
+    int32_t offset;
+    std::shared_ptr<CCCodeData> encryptVector;
+    std::shared_ptr<CCCodeData> decryptVector;
+    openSSL::AES_KEY AESEncryptKey;
+    openSSL::AES_KEY AESDecryptKey;
+}_CCAESCryptorTag_S;
+
 typedef struct _CCAESCryptorInfo
 {
 #if CRYPTOR_USE_SMT_PTR
@@ -59,6 +69,8 @@ typedef struct _CCAESCryptorInfo
     _AESVectorType vectorType;
     _CCAESEncryptSizeBlock encryptSizeBlock;
     CCAESCryptDataPaddingBlock paddingBlock;
+    
+    std::unordered_map<int32_t, _CCAESCryptorTag_S> _tagMap;
     
 //public
     CCAESKeyType keyType;
@@ -124,6 +136,9 @@ void _AES_ecb_crypt_block_data(const unsigned char *in, unsigned char *out,
 
 static inline CCCodeData * _copyCodeData(CCCodeData *codeData)
 {
+    if (codeData == nullptr) {
+        return nullptr;
+    }
     int64_t dataSize = codeData->dataSize();
     CCCodeData *copy = new CCMutableCodeData(dataSize);
     copy->writeBuffer(codeData->bytes(), dataSize);
@@ -457,6 +472,38 @@ void CCAESCryptor::reset()
         openSSL::AES_set_encrypt_key(ptrKey, keyBits, &info->AESEncryptKey);
         openSSL::AES_set_decrypt_key(ptrKey, keyBits, &info->AESDecryptKey);
     }
+    info->_tagMap.clear();
+}
+
+void CCAESCryptor::markTag(int32_t tag)
+{
+    struct _CCAESCryptorInfo *info = (struct _CCAESCryptorInfo*)ptrCryptorInfo;
+
+    _CCAESCryptorTag_S t;
+    
+    t.offset = info->offset;
+    t.encryptVector = std::shared_ptr<CCCodeData>(_copyCodeData(info->encryptVector.get()));
+    t.decryptVector = std::shared_ptr<CCCodeData>(_copyCodeData(info->decryptVector.get()));
+    t.AESEncryptKey = info->AESEncryptKey;
+    t.AESDecryptKey = info->AESDecryptKey;
+    
+    info->_tagMap.insert(std::pair<int32_t, _CCAESCryptorTag_S>(tag, t));
+}
+
+void CCAESCryptor::resetToTag(int32_t tag)
+{
+    struct _CCAESCryptorInfo *info = (struct _CCAESCryptorInfo*)ptrCryptorInfo;
+    
+    std::unordered_map<int32_t, _CCAESCryptorTag_S>::const_iterator it = info->_tagMap.find(tag);
+    if (it == info->_tagMap.end()) {
+        return;
+    }
+    _CCAESCryptorTag_S t = it->second;
+    info->offset = t.offset;
+    info->encryptVector = std::shared_ptr<CCCodeData>(_copyCodeData(t.encryptVector.get()));
+    info->decryptVector = std::shared_ptr<CCCodeData>(_copyCodeData(t.decryptVector.get()));
+    info->AESEncryptKey = t.AESEncryptKey;
+    info->AESDecryptKey = t.AESDecryptKey;
 }
 
 BOOL CCAESCryptor::isValidCryptor()

@@ -72,6 +72,8 @@ public:
     
     int64_t remSize();
     
+    //从position计算remSize
+    int64_t remSeekSize();
     
     void bzero();
     
@@ -111,7 +113,11 @@ public:
     
     virtual ~CCMutableCodeData();
     
+    //这个是从length计算remSize
     BOOL ensureRemSize(int64_t remSize);
+    
+    //这个是从position计算remSize
+    BOOL ensureRemSeekSize(int64_t remSeekSize);
     
     BOOL increaseBufferSizeBy(int64_t increaseSize);
     

@@ -1,0 +1,16 @@
+PODS:
+  - MMKV (1.0.23)
+
+DEPENDENCIES:
+  - MMKV
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - MMKV
+
+SPEC CHECKSUMS:
+  MMKV: 031ae51aedc0af1b250922f7ed8a6b6ee2f94c4c
+
+PODFILE CHECKSUM: 3699819a20c7c3ab4a1a769c2667e65c8b8b6538
+
+COCOAPODS: 1.7.5

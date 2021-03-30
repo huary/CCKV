@@ -41,6 +41,9 @@ NS_ASSUME_NONNULL_BEGIN
  *Account
  ***********************************************************************/
 @interface Account : User <CCCodeObjectProtocol>
+{
+    int _a;
+}
 
 @property (nonatomic, strong) NSData *autoAuthKey;
 @property (nonatomic, strong) NSString *appKey;

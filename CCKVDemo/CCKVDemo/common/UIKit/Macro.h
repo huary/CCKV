@@ -12,12 +12,12 @@
 #define __DEBUG__                           DEBUG
 
 //日志打印
-#ifdef DEBUG
-//#   define NSLog(fmt, ...)                       NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
-#   define NSLog(fmt, ...)                       NSLog(fmt, ##__VA_ARGS__);
-#else
-#   define NSLog(...)
-#endif
+//#ifdef DEBUG
+////#   define NSLog(fmt, ...)                       NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+//#   define NSLog(fmt, ...)                       NSLog(fmt, ##__VA_ARGS__);
+//#else
+//#   define NSLog(...)
+//#endif
 
 //导航栏的常量宏定义
 #define NAVIGATION_ITEM_VIEW_SUBVIEWS_LEFT_SPACE                                (12)
